@@ -40,3 +40,37 @@ Um painel aparece no topo da lista de conversas ("Recentes") na barra lateral.
   (política Trusted Types).
 
 Se o Google mudar a interface, ajuste o objeto `SEL` no início do script.
+
+---
+
+# Copilot Bulk Delete (userscript)
+
+A mesma ferramenta para o Microsoft 365 Copilot (https://m365.cloud.microsoft/chat),
+que também não exclui chats em massa.
+
+## Instalação
+
+Com o Tampermonkey instalado, abra:
+https://raw.githubusercontent.com/jusgador/GeminiBulkDelete/main/copilot-bulk-delete.user.js
+
+## Uso
+
+O painel aparece logo abaixo do título "Chats" na barra lateral, com os mesmos botões do
+script do Gemini (seleção em massa, todas / limpar / inverter, últimos X dias, mais antigos,
+excluir selecionados, parar). Diferenças:
+
+- **Carregar todos** rola a lista até o fim repetidamente até ela parar de crescer. O Copilot
+  carrega a lista em páginas de ~10 chats, então use este botão antes de "Selecionar todas".
+- As datas mostradas são as da última atividade e são exatas (não há estimativa).
+- Chats que estão dentro de Notebooks não aparecem na lista lateral e não são alcançados.
+
+## Como funciona
+
+- Cada chat da lista é um `div.fui-SplitNavItem` com o link `a[href*="/chat/conversation/"]`
+  e o botão "Mais" `[data-chat-history-more-button-conversation-id="<id>"]` (out/2026).
+- As datas vêm das props React do item (`chatItem.updateTimeUtc`), sem chamadas extras.
+- A exclusão usa o menu do próprio Copilot ("Mais → Excluir" e o botão "Excluir" do diálogo
+  `[role="alertdialog"]`). Antes de confirmar, o script confere que o diálogo cita o título
+  do chat; se não citar, cancela e registra a falha.
+
+Se a Microsoft mudar a interface, ajuste o objeto `SEL` no início do script.
